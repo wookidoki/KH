@@ -5,165 +5,206 @@ import java.util.List;
 import java.util.Scanner;
 
 import com.kh.idol.controller.IdolController;
+import com.kh.idol.mode.vo.Board;
+import com.kh.idol.mode.vo.Fan;
 import com.kh.idol.mode.vo.Idol;
 
 public class IdolView {
 
-	// 필드부
-	private Scanner sc = new Scanner(System.in);
-	private IdolController ic = new IdolController();
+    private Scanner sc = new Scanner(System.in);
+    private IdolController ic = new IdolController();
+    private Fan loginFan;
 
-	// 생성자부
+    public void mainMenu() {
+        System.out.println("Aespa 커뮤니티");
 
-	// 메소드부
+        while (true) {
+            try {
+                System.out.println("""
+                        ===================
+                        1. 에스파 정보보기
+                        2. 회원 가입
+                        3. 로그인 
+                        4. 게시판 서비스 
+                        5. 프로그램 종료
+                        ===================
+                        메뉴 번호 입력 >  
+                        """);
+                int menuNo = sc.nextInt();
+                sc.nextLine();
 
-	public void mainMenu() {
-	    System.out.println("Aespa");
+                switch (menuNo) {
+                    case 1 -> info();
+                    case 2 -> signUp();
+                    case 3 -> login();
+                    case 4 -> boardMenu();
+                    case 5 -> { 
+                        System.out.println("프로그램을 종료합니다.");
+                        return; 
+                    }
+                    default -> System.out.println("잘못된 메뉴입니다.");
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("숫자를 입력해주세요.");
+                sc.nextLine();
+            }
+        }
+    }
 
-	    while (true) {
-	        try {
-	            System.out.println("""
-	                    이용하실 서비스를 선택해주세요
-	                    1. 에스파 정보보기
-	                    2. 회원 가입
-	                    3. 로그인 
-	                    4. 게시판 서비스 
-	                    5. 프로그램 종료
-	                    메뉴 번호 입력 >  
-	                    """);
-	            int menuNo = sc.nextInt();
-	            sc.nextLine(); // 버퍼 비우기
+    // 1. 에스파 정보
+    private void info() {
+        System.out.println("""
+                ---- 에스파 정보 ----
+                1. 카리나
+                2. 지젤
+                3. 윈터
+                4. 닝닝
+                5. 전체
+                6. 메인메뉴
+                메뉴 번호 입력 >
+                """);
+        int menuNo = sc.nextInt();
+        sc.nextLine();
 
-	            switch (menuNo) {
-	                case 1 -> info();
-	                case 2 -> signUp();
-	                case 3 -> System.out.println("로그인 기능은 준비 중입니다.");
-	                case 4 -> System.out.println("게시판 기능은 준비 중입니다.");
-	                case 5 -> {
-	                    System.out.println("프로그램을 종료합니다.");
-	                    return; // while 루프 탈출
-	                }
-	                default -> System.out.println("잘못된 메뉴를 선택하셨습니다.");
-	            }
-	        } catch (InputMismatchException e) {
-	            System.out.println("숫자를 입력해주세요.");
-	            sc.nextLine(); // 잘못된 입력 제거
-	        } catch (Exception e) {
-	            System.out.println("알 수 없는 오류 발생: " + e.getMessage());
-	        }
-	    }
-	}
+        switch (menuNo) {
+            case 1,2,3,4 -> showMember(menuNo);
+            case 5 -> showAll();
+            case 6 -> {}
+            default -> System.out.println("잘못된 입력입니다.");
+        }
+    }
 
-	// 1. 에스파 정보보기 서비스
-	private void info() {
-	    try {
-	        System.out.println(""" 
-	                정보 보기 
-	                1. 카리나의 정보보기 
-	                2. 지젤의 정보보기
-	                3. 윈터의 정보보기
-	                4. 닝닝의 정보보기
-	                5. 에스파 전체 정보보기
-	                6. 메인메뉴로 돌아가기
-	                메뉴 번호 입력 >  
-	                """);
-	        int menuNo = sc.nextInt();
-	        sc.nextLine();
+    private void showMember(int menuNo) {
+        Idol m = ic.findMember(menuNo);
+        if(m == null) {
+            System.out.println("해당 멤버 없음.");
+        } else {
+            System.out.println("이름: " + m.getName());
+            System.out.println("포지션: " + m.getPosition());
+            System.out.println("특기: " + m.getSkill());
+        }
+    }
 
-	        switch (menuNo) {
-	            case 1, 2, 3, 4 -> showMember(menuNo);
-	            case 5 -> showAll();
-	            case 6 -> {}
-	            default -> System.out.println("잘못된 메뉴를 선택하셨습니다.");
-	        }
-	    } catch (InputMismatchException e) {
-	        System.out.println("숫자를 입력해주세요.");
-	        sc.nextLine();
-	    } catch (Exception e) {
-	        System.out.println("에스파 정보 보기 중 오류 발생: " + e.getMessage());
-	    }
-	}
+    private void showAll() {
+        List<Idol> list = ic.findAll();
+        for(Idol i : list) {
+            System.out.println("이름: " + i.getName());
+            System.out.println("포지션: " + i.getPosition());
+            System.out.println("특기: " + i.getSkill());
+            System.out.println("----------------");
+        }
+    }
 
-	private void showMember(int menuNo) {
-	    try {
-	        Idol member = ic.findMember(menuNo);
-	        if (member == null) {
-	            System.out.println("해당 번호의 멤버가 없습니다.");
-	        } else {
-	            System.out.println("이름 : " + member.getName());
-	            System.out.println("포지션 : " + member.getPosition());
-	            System.out.println("특기 : " + member.getSkill());
-	            System.out.println();
-	        }
-	    } catch (IndexOutOfBoundsException e) {
-	        System.out.println("존재하지 않는 인덱스 접근입니다.");
-	    } catch (Exception e) {
-	        System.out.println("멤버 조회 중 오류 발생: " + e.getMessage());
-	    }
-	}
+    // 2. 회원가입
+    private void signUp() {
+        System.out.println("회원가입");
+        System.out.print("아이디 입력 > ");
+        String userId = sc.nextLine();
 
-	private void showAll() {
-	    try {
-	        List<Idol> aespa = ic.findAll();
-	        if (aespa == null || aespa.isEmpty()) {
-	            System.out.println("멤버가 없습니다.");
-	        } else {
-	            for (Idol i : aespa) {
-	                System.out.println("이름 : " + i.getName());
-	                System.out.println("포지션 : " + i.getPosition());
-	                System.out.println("특기 : " + i.getSkill());
-	                System.out.println();
-	            }
-	        }
-	    } catch (Exception e) {
-	        System.out.println("전체 멤버 조회 중 오류 발생: " + e.getMessage());
-	    }
-	}
-	
-	private void signUp() {
-	    String userId;
-	    String userPwd;
-	    String nickName;
+        if(userId.length() < 4 || userId.length() > 10) {
+            System.out.println("아이디는 4~10글자만 가능");
+            return;
+        }
 
-	    System.out.println("에스파 커뮤니티에 오신것을 환영합니다");
-	    System.out.println("\n회원가입 서비스");
+        if(!ic.checkId(userId)) {
+            System.out.println("이미 존재하는 아이디");
+            return;
+        }
 
-	    while (true) {
-	        try {
-	            System.out.println("아이디는 4글자에서 10글자 사이로 입력해주세요");
-	            System.out.print("아이디 만들기 > ");
-	            userId = sc.nextLine();
+        System.out.print("비밀번호 입력 > ");
+        String userPwd = sc.nextLine();
+        System.out.print("닉네임 입력 > ");
+        String nickName = sc.nextLine();
 
-	            if (userId.length() < 4 || userId.length() > 10) {
-	                System.out.println("아이디는 4글자에서 10글자 사이로 입력해주세요!!");
-	                continue;
-	            }
+        if(ic.signUp(userId, userPwd, nickName)) {
+            System.out.println("회원가입 성공!");
+        } else {
+            System.out.println("회원가입 실패");
+        }
+    }
 
-	            if (!ic.checkId(userId)) {
-	                System.out.println("이미 존재하고 있는 아이디입니다.");
-	                continue; // 다시 입력받기
-	            } else {
-	                System.out.println("사용 가능한 아이디입니다.");
-	            }
+    // 3. 로그인
+    private void login() {
+        System.out.print("아이디 > ");
+        String id = sc.nextLine();
+        System.out.print("비밀번호 > ");
+        String pw = sc.nextLine();
 
-	            System.out.print("비밀번호 만들기 > ");
-	            userPwd = sc.nextLine();
+        Fan f = ic.login(id,pw);
+        if(f != null) {
+            loginFan = f;
+            System.out.println(f.getNickName()+"님 로그인 성공!");
+        } else {
+            System.out.println("로그인 실패");
+        }
+    }
 
-	            System.out.print("닉네임 입력  > ");
-	            nickName = sc.nextLine();
+    // 4. 게시판
+    private void boardMenu() {
+        if(loginFan == null) {
+            System.out.println("로그인 후 이용 가능");
+            return;
+        }
 
-	            boolean result = ic.signUp(userId, userPwd, nickName);
+        while(true) {
+            System.out.println("""
+                    ---- 게시판 ----
+                    1. 글 작성
+                    2. 전체 글 조회
+                    3. 글 상세 조회
+                    4. 메인메뉴
+                    """);
+            int menu = sc.nextInt();
+            sc.nextLine();
 
-	            if(result) {
-	                System.out.println("회원가입 축하드립니다.");
-	            } else {
-	                System.out.println("회원가입 실패 (아이디 중복)");
-	            }
-	            break; // 회원가입 종료 후 while 탈출
+            switch(menu) {
+                case 1 -> writeBoard();
+                case 2 -> viewBoards();
+                case 3 -> viewBoardDetail();
+                case 4 -> { return; }
+                default -> System.out.println("잘못된 메뉴");
+            }
+        }
+    }
 
-	        } catch (Exception e) {
-	            System.out.println("입력 처리 중 오류 발생: " + e.getMessage());
-	        }
-	    }
-	}
+    private void writeBoard() {
+        System.out.print("제목 > ");
+        String title = sc.nextLine();
+        System.out.print("내용 > ");
+        String content = sc.nextLine();
+
+        int boardNo = ic.getBoards().size() + 1; // 글 번호 자동 증가
+        String writer = loginFan.getUserId(); // 로그인한 회원의 아이디 사용
+        String createDate = java.time.LocalDate.now().toString(); // 오늘 날짜 자동 입력
+
+        ic.writeBoard(boardNo, title, content, writer, createDate);
+        System.out.println("글 작성 완료!");
+    }
+
+    private void viewBoards() {
+        List<Board> list = ic.getBoards();
+        if(list.isEmpty()) {
+            System.out.println("작성된 글 없음");
+            return;
+        }
+        for(Board b : list) {
+            System.out.println(b.getBoardNo() + ". " + b.getBoardTitle() 
+                               + " (" + b.getUserId() + ", " + b.getCreateDate() + ")");
+        }
+    }
+
+    private void viewBoardDetail() {
+        System.out.print("글 번호 입력 > ");
+        int no = sc.nextInt();
+        sc.nextLine();
+        Board b = ic.getBoardByNo(no);
+        if(b == null) {
+            System.out.println("존재하지 않는 글");
+        } else {
+            System.out.println("제목: " + b.getBoardTitle());
+            System.out.println("작성자: " + b.getUserId());
+            System.out.println("작성일: " + b.getCreateDate());
+            System.out.println("내용: " + b.getBoardContent());
+        }
+    }
 }
